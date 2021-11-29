@@ -2,8 +2,7 @@
     import { createForm } from "svelte-forms-lib";
     import * as yup from "yup";
     
-    let client_ipaddress = "";
-    let client_timezone = "";
+   
     const schema = yup.object().shape({
         username: yup.string().required().matches(/^[a-zA-z0-9]+$/, "Username must Character A-Z or a-z or 1-9 ").min(3).max(30),
         password: yup.string().required().min(4).max(30)
@@ -27,8 +26,6 @@
             body: JSON.stringify({
                 username: username,
                 password: password,
-                ipaddress: client_ipaddress,
-                timezone: client_timezone,
             }),
         });
         const json = await res.json();
@@ -41,24 +38,7 @@
             window.location.href = "/";
         }
     }
-    async function initTimezone() {
-        const res = await fetch("https://ipinfo.io/json?token=0d10fdc946df5a");
-        if(res.status == 200){
-            if (!res.ok) {
-                const message = `An error has occured: ${res.status}`;
-                throw new Error(message);
-            } else {
-                const json = await res.json();
-                client_ipaddress = json.ip;
-                client_timezone = json.timezone;
-            }
-        }else{
-            client_ipaddress = "111.111.111.111";
-            client_timezone = "Asia/Jakarta";
-        }
-        
-    }
-    initTimezone();
+    
     $:{
         if ($errors.username || $errors.password){
             alert($errors.username+"\n"+$errors.password)

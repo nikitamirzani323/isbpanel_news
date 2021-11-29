@@ -28,14 +28,7 @@
 					table_header_font: table_header_font,
 					table_body_font: table_body_font,
 				},
-				component: Dashboard,
-			}),
-			"/news": wrap({
 				component: News,
-				props: {
-					table_header_font: table_header_font,
-					table_body_font: table_body_font,
-				},
 			}),
 			"*": NotFound,
 		};

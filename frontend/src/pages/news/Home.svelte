@@ -58,26 +58,8 @@
         myModal = new bootstrap.Modal(document.getElementById("modalfetchnew"));
         myModal.show();
     };
-    const ShowCategory = () => {
-        sData = ""
-        myModal = new bootstrap.Modal(document.getElementById("modalcategory"));
-        myModal.show();
-        call_category()
-    };
-    const ShowFormCategory = (e,id,name,display,status) => {
-        sData = e
-        if(e == "Edit"){
-            category_field_idrecord = parseInt(id);
-            category_field_name = name;
-            category_field_display = parseInt(display);
-            category_field_status = status;
-        }else{
-            clearfield_category()
-        }
-        
-        myModal = new bootstrap.Modal(document.getElementById("modalcrudcategory"));
-        myModal.show();
-    };
+    
+    
     const ShowFormNews = (e,id,category,title,descp,url,image) => {
         sData = e
         news_field_idrecord = parseInt(id);
@@ -168,59 +150,7 @@
             }
         } 
     }
-    async function handleSaveCategory() {
-        let flag = true
-        let msg = ""
-        css_loader = "display: inline-block;";
-        msgloader = "Sending...";
-        if(sData == "New"){
-            if(category_field_name == ""){
-                flag = false
-                msg += "The Name is required\n"
-            }
-            if(category_field_display == ""){
-                flag = false
-                msg += "The Display is required\n"
-            }
-        }
-        if(flag){
-            
-            css_loader = "display: inline-block;";
-            msgloader = "Sending...";
-            const res = await fetch("/api/categorynewssave", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    sdata: sData,
-                    page:"CATEGORYNEWS-SAVE",
-                    category_id: parseInt(category_field_idrecord),
-                    category_name: category_field_name.toUpperCase(),
-                    category_status: category_field_status,
-                    category_display: parseInt(category_field_display),
-                }),
-            });
-            const json = await res.json();
-            if (json.status == 200) {
-                msgloader = json.message;
-                myModal.hide()
-                call_category()
-                clearfield_category()
-            } else if(json.status == 403){
-                alert(json.message)
-            } else {
-                msgloader = json.message;
-            }
-            setTimeout(function () {
-                css_loader = "display: none;";
-            }, 1000);
-        }else{
-            alert(msg)
-        }
-        
-    }
+    
     async function handleSave() {
         let flag = true
         let msg = ""
@@ -294,43 +224,7 @@
             alert(msg)
         }
     }
-    async function handleDeleteCategoryNews(e) {
-        let flag = true
-        let msg = ""
-        if(e == ""){
-            flag = false
-            msg = "The Category is required"
-        }
-        if(flag){
-            css_loader = "display: inline-block;";
-            msgloader = "Sending...";
-            const res = await fetch("/api/categorynewsdelete", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify({
-                    page:"CATEGORYNEWS-DELETE",
-                    category_id: parseInt(e),
-                }),
-            });
-            const json = await res.json();
-            if (json.status == 200) {
-                call_category()
-                msgloader = json.message;
-            } else if(json.status == 403){
-                alert(json.message)
-            } else {
-                msgloader = json.message;
-            }
-            setTimeout(function () {
-                css_loader = "display: none;";
-            }, 1000);
-        }else{
-            alert(msg)
-        }
-    }
+   
     function callFunction(event){
         switch(event.detail){
             case "CALL_FORMNEWS":
@@ -339,15 +233,7 @@
             case "FETCH_NEWS":
                 call_news();
                 break;
-            case "CALL_CATEGORY":
-                ShowCategory();
-                break;
-            case "FORMNEW_CATEGORY":
-                ShowFormCategory("New");
-                break;
-            case "SAVE_CATEGORY":
-                handleSaveCategory();
-                break;
+        
             case "REFRESH":
                 RefreshHalaman();break;
             case "SAVE_NEWS":
@@ -434,11 +320,6 @@
             </Panel>
         </div>
         <div class="col-sm-6">
-            <Button
-                on:click={callFunction}
-                button_function="CALL_CATEGORY"
-                button_title="Category"
-                button_css="btn-primary"/>
             <Button
                 on:click={callFunction}
                 button_function="REFRESH"
@@ -615,105 +496,6 @@
         <Button
             on:click={callFunction}
             button_function="SAVE_NEWS"
-            button_title="Save"
-            button_css="btn-warning"/>
-	</slot:template>
-</Modal>
-<Modal
-	modal_id="modalcategory"
-	modal_size="modal-dialog-centered"
-	modal_title="CATEGORY"
-    modal_body_css="height:500px;"
-    modal_footer_css="padding:5px;"
-	modal_footer={true}>
-	<slot:template slot="body">
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th width="1%" colspan="2">&nbsp;</th>
-                    <th width="1%" style="text-align: center;vertical-align: top;font-weight:bold;font-size:{table_header_font};">NO</th>
-                    <th width="1%" style="text-align: center;vertical-align: top;font-weight:bold;font-size:{table_header_font};">STATUS</th>
-                    <th width="*" style="text-align: left;vertical-align: top;font-weight:bold;font-size:{table_header_font};">CATEGORY</th>
-                    <th width="5%" style="text-align: right;vertical-align: top;font-weight:bold;font-size:{table_header_font};">NEWS</th>
-                    <th width="5%" style="text-align: right;vertical-align: top;font-weight:bold;font-size:{table_header_font};">DISPLAY</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each listcategory as rec }
-                <tr>
-                    <td NOWRAP style="text-align: center;vertical-align: top;cursor:pointer;">
-                        <i 
-                            on:click={() => {
-                                ShowFormCategory("Edit",rec.category_id,rec.category_name,rec.category_display,rec.category_status);
-                            }} 
-                            class="bi bi-pencil"></i>
-                    </td>
-                    <td NOWRAP style="text-align: center;vertical-align: top;cursor:pointer;">
-                        <i 
-                            on:click={() => {
-                                handleDeleteCategoryNews(rec.category_id);
-                            }} 
-                            class="bi bi-trash"></i>
-                    </td>
-                    <td NOWRAP style="text-align: center;vertical-align: top;font-size: {table_body_font};">{rec.category_no}</td>
-                    <td NOWRAP style="text-align: center;vertical-align: top;font-size: {table_body_font};{rec.category_statuscss}">{rec.category_status}</td>
-                    <td NOWRAP style="text-align: left;vertical-align: top;font-size: {table_body_font};">{rec.category_name}</td>
-                    <td NOWRAP style="text-align: right;vertical-align: top;font-size: {table_body_font};">{rec.category_totalnews}</td>
-                    <td NOWRAP style="text-align: right;vertical-align: top;font-size: {table_body_font};">{rec.category_display}</td>
-                </tr>
-                {/each}
-                
-            </tbody>
-        </table>
-	</slot:template>
-	<slot:template slot="footer">
-        <Button
-            on:click={callFunction}
-            button_function="FORMNEW_CATEGORY"
-            button_title="New"
-            button_css="btn-warning"/>
-	</slot:template>
-</Modal>
-<Modal
-	modal_id="modalcrudcategory"
-	modal_size="modal-dialog-centered"
-	modal_title="CATEGORY/{sData}"
-    modal_body_css=""
-    modal_footer_css="padding:5px;"
-	modal_footer={true}>
-	<slot:template slot="body">
-        <div class="mb-3">
-            <label for="exampleForm" class="form-label">Name</label>
-			<Input
-                bind:value={category_field_name}
-                class="required"
-                type="text"
-                placeholder="Category Name"/>
-		</div>
-        <div class="mb-3">
-            <label for="exampleForm" class="form-label">Display</label>
-			<Input
-                bind:value={category_field_display}
-                class="required"
-                maxlength=3
-                type="text"
-                style="text-align:right;"
-                placeholder="Category Display"/>
-		</div>
-        <div class="mb-3">
-            <label for="exampleForm" class="form-label">Status</label>
-            <select
-                bind:value={category_field_status} 
-                class="form-control required">
-                <option value="Y">ACTIVE</option>
-                <option value="">DEACTIVE</option>
-            </select>
-		</div>
-	</slot:template>
-	<slot:template slot="footer">
-        <Button
-            on:click={callFunction}
-            button_function="SAVE_CATEGORY"
             button_title="Save"
             button_css="btn-warning"/>
 	</slot:template>

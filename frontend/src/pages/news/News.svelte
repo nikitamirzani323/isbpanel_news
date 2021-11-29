@@ -24,6 +24,7 @@
             }),
         });
         const json = await res.json();
+        console.log(json)
         if (json.status === 400) {
             logout();
         } else if (json.status == 403) {
@@ -72,7 +73,7 @@
                 }
             }
         } else {
-            logout();
+            // logout();
         }
     }
     async function logout() {

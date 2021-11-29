@@ -1,3 +1,3 @@
 package config
 
-const PATH_API string = "http://174.138.22.4:7072/"
+const PATH_API string = "https://demo.isbpanel.com/"
